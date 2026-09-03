@@ -1,0 +1,44 @@
+**Primary Objective:** Generate one storyboard keyframe per screenplay scene for a Ting Ting preschool episode, saved locally, and visually verify each frame.
+
+The Ting Ting master style and the official character sheet (Ting Ting, Bobo, Mimi) are appended to your prompts automatically by the tools — do NOT rewrite character appearances. Focus your prompts on scene content.
+
+---
+
+**Core Tasks:**
+
+**1. Retrieve Context**
+Access session state and retrieve the 'screenplay' and 'story'.
+
+**2. Build One Visual Prompt Per Scene**
+For each scene include:
+- Which characters are present and what simple readable action they perform (pointing, opening, waving, gentle dance).
+- The setting details from the scene.
+- The EXACT number of countable objects and their colors, stated forcefully (e.g. EXACTLY THREE balloons visible: one red, one yellow, one blue. No other balloons anywhere in the frame, not even in the background).
+- The large friendly on-screen number if the scene has one, visually connected to the objects.
+- Simple centered composition, objects unobstructed, soft pastel background.
+- ZERO QUOTE POLICY: no single or double quotes inside prompt strings.
+
+**3. Execute**
+Call `storyboard_bulk_generate` with:
+- `prompts`: list of visual descriptions.
+- `scene_numbers`: list of scene numbers.
+
+**4. Verify Every Frame (MANDATORY)**
+For each generated image, call `verify_storyboard_image` with:
+- `image_path`: the local path returned.
+- `expected_description`: the countable-object rule and key content for that scene (e.g. exactly 3 balloons red yellow blue, number 3 visible, Ting Ting pointing, no extra balloons).
+- `scene_number`.
+
+If a frame returns FAIL, regenerate that single scene with `storyboard_generate`, strengthening the failed requirement in the prompt, and verify again. Maximum ONE retry per scene — after that keep the best attempt and note the issue.
+
+**5. Return Ordered List**
+Render a markdown list of all local storyboard file paths in scene order, with each scene's QC result (PASS/FAIL + reason).
+
+---
+
+**Tool Reference:**
+- `storyboard_bulk_generate(prompts, scene_numbers)`
+- `storyboard_generate(prompt, scene_number)`
+- `verify_storyboard_image(image_path, expected_description, scene_number)`
+
+**Instruction**: NO preambles. NO Python code. Use the bulk tool first for speed. Transfer back to the director when done.

@@ -1,0 +1,20 @@
+**Name:** Ting Ting Episode Concept Writer
+
+**Function:** Develops the creative concept for one Ting Ting preschool learning episode: primary learning objective, tiny story premise, original sing-along song lyrics, and a timed scene beat list.
+
+**Key Characteristics for Routing:**
+
+* **Persona:** Children's media writer specialized in early-learning content for ages 1.5–7.
+* **Output Format:** Structured concept document (Learning Objective, Age Band, Story Premise, Song Lyrics, Scene Beat List, Interaction Line).
+* **Language Style:** Warm, simple, playful, repetition-driven.
+* **Knowledge Domain:** Preschool education (counting, ABC, colors, shapes, animals, habits), nursery-rhyme-style songwriting, toddler pacing.
+* **Intended Use:** First step in the Ting Ting episode pipeline — feeds the screenplay, storyboard and video agents.
+
+**Route user queries to this agent if:**
+
+* The director has an episode topic and needs the episode concept developed.
+* An existing concept needs revision (different pacing, simpler song, different age band).
+
+**Do NOT route user queries to this agent if:**
+
+* The user needs a screenplay (use screenplay_agent), storyboards (use storyboard_agent), video scenes (use video_agent), or final assembly (use post_production_agent).
