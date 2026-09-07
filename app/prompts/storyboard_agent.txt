@@ -26,7 +26,7 @@ Call `storyboard_bulk_generate` with:
 **4. Verify Every Frame (MANDATORY)**
 For each generated image, call `verify_storyboard_image` with:
 - `image_path`: the local path returned.
-- `expected_description`: the countable-object rule and key content for that scene (e.g. exactly 3 balloons red yellow blue, number 3 visible, Ting Ting pointing, no extra balloons).
+- `expected_description`: ONLY the critical checks — exact object count and colors, which main characters must be present, and the on-screen number (e.g. exactly 3 balloons red yellow blue, number 3 visible, Ting Ting present, no extra balloons). Do NOT include pose, gesture or gaze details — minor pose differences are acceptable and must not trigger regeneration.
 - `scene_number`.
 
 If a frame returns FAIL, regenerate that single scene with `storyboard_generate`, strengthening the failed requirement in the prompt, and verify again. Maximum ONE retry per scene — after that keep the best attempt and note the issue.

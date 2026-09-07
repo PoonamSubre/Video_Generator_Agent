@@ -30,7 +30,7 @@ def generate_speech(text: str, session_id: str, scene_number: int) -> str | None
         logger.info(
             f"Synthesizing narration for scene {scene_number}: '{text[:50]}...'"
         )
-        response = brand.genai_client().models.generate_content(
+        response = brand.generate_content_safe(
             model=brand.TTS_MODEL,
             contents=(
                 "Say this in a warm, gentle, cheerful voice for toddlers, "

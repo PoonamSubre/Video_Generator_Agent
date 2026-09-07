@@ -52,6 +52,19 @@ def genai_client():
     return _client
 
 
+def generate_content_safe(**kwargs):
+    """generate_content on the shared client, retrying once with a fresh
+    client if adk hot-reload closed the HTTP session mid-request."""
+    global _client
+    try:
+        return genai_client().models.generate_content(**kwargs)
+    except RuntimeError as e:
+        if "closed" not in str(e).lower():
+            raise
+        _client = None
+        return genai_client().models.generate_content(**kwargs)
+
+
 def video_genai_client():
     """Client used for Veo. If GOOGLE_API_KEY is set, Veo calls go through the
     Gemini API instead of Vertex (useful while the org blocks Veo on Vertex).
@@ -72,6 +85,10 @@ def video_genai_client():
             )
     return _video_client
 
+# --- Performance (raise if your Veo/Gemini quotas allow) ---
+PARALLEL_VIDEOS = int(os.getenv("TINGTING_PARALLEL_VIDEOS", "4"))
+PARALLEL_IMAGES = int(os.getenv("TINGTING_PARALLEL_IMAGES", "4"))
+
 # --- Local storage (no GCS) ---
 _PROJECT_ROOT = pathlib.Path(__file__).resolve().parent.parent
 OUTPUT_ROOT = pathlib.Path(
@@ -83,6 +100,10 @@ OUTPUT_ROOT = pathlib.Path(
 BRAND_ASSETS_DIR = _PROJECT_ROOT / "assets" / "brand"
 BRAND_INTRO_PATH = BRAND_ASSETS_DIR / "intro.mp4"
 BRAND_OUTRO_PATH = BRAND_ASSETS_DIR / "outro.mp4"
+# Optional continuous music bed looped quietly under the whole episode to
+# glue the per-scene soundtracks together (drop any cheerful royalty-free
+# kids track here).
+BRAND_MUSIC_PATH = BRAND_ASSETS_DIR / "music_bed.mp3"
 
 # Font used for on-screen number overlays (ffmpeg drawtext).
 OVERLAY_FONT = os.getenv(
@@ -108,18 +129,21 @@ def scene_dir(session_id: str, scene_number: int) -> pathlib.Path:
 MASTER_STYLE = """
 STYLE: Original high-quality 3D preschool animation for the Ting Ting brand.
 Warm, adorable, polished 3D look with soft rounded shapes, expressive cute
-characters, large readable eyes, friendly faces, smooth gentle animation.
+characters, large readable eyes, friendly faces, lively bouncy animation.
 Bright cheerful foreground colors on soft pastel backgrounds, no neon.
 Soft morning daylight, warm cheerful atmosphere, subtle shadows, premium
 children's TV render quality. Colorful magical garden world: flowers, soft
 green grass, rounded trees, fluffy clouds, small picnic table, bright blue sky.
-Eye-level child perspective, medium shots and close-ups, slow gentle camera,
-important objects centered and unobstructed.
+Eye-level child perspective, medium shots and close-ups, smooth camera with
+playful energy, important objects centered and unobstructed.
 Completely original visual identity - do not imitate any existing children's
 animation franchise or YouTube channel.
-MOOD: joyful, curious, safe, musical, educational, playful.
+MOOD: joyful, energetic, curious, safe, musical, educational, playful.
+Characters are full of happy energy: they bounce, dance, clap and gesture
+enthusiastically with big warm smiles - always readable, never chaotic.
 AVOID: fast cuts, rapid camera movement, flashing lights, chaotic action,
-frightening elements, visual clutter, extra background objects.
+frightening elements, visual clutter, extra background objects, and also
+sluggish, sleepy or static scenes.
 """
 
 # --- Character sheet (appended to every image/video prompt) ---
@@ -140,9 +164,18 @@ Keep character scale consistent relative to one another.
 # Global continuity line injected into every Veo prompt.
 VIDEO_CONTINUITY = """
 Same characters with identical design, clothing and colors as the reference
-image. Gentle preschool pacing: slow readable movement, characters point at
-objects when counting, warm smiles, no fast camera moves.
-Cheerful preschool music: soft xylophone, ukulele, gentle piano, soft bells,
-light hand percussion. Warm child-friendly voices, clear slow pronunciation.
+image, and the same environment, lighting and art style as the reference
+image - this is one continuous video, not a new setting.
+Joyful energetic preschool pacing: bouncy readable movement, characters
+dance, hop, clap and point at objects enthusiastically, big warm smiles,
+smooth camera with playful energy, no rapid cuts.
+Upbeat cheerful preschool music around 120 bpm that feels like the same
+happy song continuing from the previous scene - same key, same tempo:
+bright xylophone, ukulele, cheerful piano, soft bells, hand claps.
+Enthusiastic warm child-friendly voices with clear pronunciation.
 No aggressive bass, no loud or frightening sound effects.
+CRITICAL AUDIO RULE: characters speak or sing ONLY the dialogue lines given
+in this prompt - do not add, improvise or mention any other words or numbers.
+The number of objects visible on screen must stay EXACTLY as specified for
+the entire clip; never add or remove objects mid-shot.
 """

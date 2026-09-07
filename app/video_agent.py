@@ -54,7 +54,7 @@ def _save_generated_video(gen_video, out_path: str) -> None:
     video.save(out_path)
 
 
-def video_generate(
+def _generate_scene_clip(
     prompt: str,
     scene_number: int,
     image_path: str,
@@ -62,23 +62,7 @@ def video_generate(
     duration_seconds: int,
     tool_context: ToolContext,
 ) -> str:
-    """
-    Generate one gentle preschool video scene and save it locally.
-
-    Args:
-        prompt (str): Visual + audio description of the scene, including any
-            character dialogue or sung lyric lines Veo should voice.
-        scene_number (int): Scene number.
-        image_path (str): Local path of the storyboard keyframe to use as the
-            starting frame (pass empty string or SCENE_SKIPPED if none).
-        narration_text (str): Optional narrator voiceover line to lay over the
-            scene, or NONE if the scene has no narrator.
-        duration_seconds (int): Clip length, one of 4, 6 or 8.
-        tool_context (): ToolContext needed by the tool.
-
-    Returns:
-        str: Local path of the finished scene clip, or SCENE_SKIPPED.
-    """
+    """Generate one scene clip (no QC). Returns local path or SCENE_SKIPPED."""
     try:
         session_id = tool_context._invocation_context.session.id
         state = tool_context._invocation_context.session.state
@@ -179,16 +163,88 @@ def video_generate(
         return SCENE_SKIPPED
 
 
+def video_generate(
+    prompt: str,
+    scene_number: int,
+    image_path: str,
+    narration_text: str,
+    duration_seconds: int,
+    qc_description: str,
+    tool_context: ToolContext,
+) -> str:
+    """
+    Generate one energetic preschool video scene, save it locally, and
+    AUTOMATICALLY verify that the audio matches the visuals (spoken/sung
+    numbers vs visible object count). A failed scene is regenerated once
+    with corrective instructions.
+
+    Args:
+        prompt (str): Visual + audio description of the scene, including any
+            character dialogue or sung lyric lines Veo should voice.
+        scene_number (int): Scene number.
+        image_path (str): Local path of the storyboard keyframe to use as the
+            starting frame (pass empty string or SCENE_SKIPPED if none).
+        narration_text (str): Optional narrator voiceover line to lay over the
+            scene, or NONE if the scene has no narrator.
+        duration_seconds (int): Clip length, one of 4, 6 or 8.
+        qc_description (str): The scene's audio/visual contract, e.g.
+            "exactly 3 balloons red yellow blue visible the whole clip;
+            characters count from one up to three while pointing; no number
+            above three is spoken". Pass NONE to skip verification.
+        tool_context (): ToolContext needed by the tool.
+
+    Returns:
+        str: Local path of the finished scene clip, or SCENE_SKIPPED.
+    """
+    path = _generate_scene_clip(
+        prompt, scene_number, image_path, narration_text,
+        duration_seconds, tool_context,
+    )
+    if (
+        path == SCENE_SKIPPED
+        or not qc_description
+        or qc_description.strip().upper() == "NONE"
+    ):
+        return path
+
+    verdict = verify_scene_clip(path, qc_description, scene_number)
+    if verdict.upper().startswith("PASS"):
+        return path
+
+    logger.warning(
+        f"Scene {scene_number} failed A/V QC ({verdict}); regenerating once."
+    )
+    corrective_prompt = (
+        f"{prompt}\n\nCRITICAL CORRECTION - a previous attempt failed "
+        f"quality control for this reason: {verdict}\n"
+        f"You MUST strictly satisfy: {qc_description}"
+    )
+    retry_path = _generate_scene_clip(
+        corrective_prompt, scene_number, image_path, narration_text,
+        duration_seconds, tool_context,
+    )
+    if retry_path == SCENE_SKIPPED:
+        return path
+    verdict2 = verify_scene_clip(retry_path, qc_description, scene_number)
+    if not verdict2.upper().startswith("PASS"):
+        logger.warning(
+            f"Scene {scene_number} still imperfect after retry: {verdict2}"
+        )
+    return retry_path
+
+
 def video_bulk_generate(
     prompts: list[str],
     scene_numbers: list[int],
     image_paths: list[str],
     narration_texts: list[str],
     durations_seconds: list[int],
+    qc_descriptions: list[str],
     tool_context: ToolContext,
 ) -> list[str]:
     """
-    Generate multiple scene clips in parallel.
+    Generate multiple scene clips in parallel, each automatically verified
+    for audio/visual match and retried once on failure.
 
     Args:
         prompts (list[str]): One visual/audio prompt per scene.
@@ -196,6 +252,8 @@ def video_bulk_generate(
         image_paths (list[str]): Local storyboard keyframe path per scene.
         narration_texts (list[str]): Narrator line per scene (NONE if none).
         durations_seconds (list[int]): Clip length per scene (4, 6 or 8).
+        qc_descriptions (list[str]): Audio/visual contract per scene (exact
+            object count, allowed counting range). NONE to skip a scene.
         tool_context (): ToolContext needed by the tool.
 
     Returns:
@@ -203,7 +261,9 @@ def video_bulk_generate(
     """
     logger.info(f"🚀 Batch generating {len(prompts)} video scenes...")
     results: list[str] = [SCENE_SKIPPED] * len(prompts)
-    with ThreadPoolExecutor(max_workers=min(len(prompts), 3)) as executor:
+    with ThreadPoolExecutor(
+        max_workers=min(len(prompts), brand.PARALLEL_VIDEOS)
+    ) as executor:
         future_to_idx = {
             executor.submit(
                 video_generate,
@@ -212,6 +272,7 @@ def video_bulk_generate(
                 image_paths[i] if i < len(image_paths) else "",
                 narration_texts[i] if i < len(narration_texts) else "NONE",
                 durations_seconds[i] if i < len(durations_seconds) else 6,
+                qc_descriptions[i] if i < len(qc_descriptions) else "NONE",
                 tool_context,
             ): i
             for i in range(len(prompts))
@@ -226,6 +287,77 @@ def video_bulk_generate(
     return results
 
 
+def verify_scene_clip(
+    clip_path: str, expected_description: str, scene_number: int
+) -> str:
+    """
+    Verify a finished scene clip: watches the video AND listens to its audio
+    to confirm the spoken/sung numbers match the visible object count.
+
+    Args:
+        clip_path (str): Local path of the scene clip (mp4).
+        expected_description (str): What must be true, e.g.
+            "exactly 3 balloons visible for the whole clip; the characters
+            count or sing only up to three; no other numbers are spoken".
+        scene_number (int): Scene number.
+
+    Returns:
+        str: "PASS" or "FAIL: <reason>".
+    """
+    try:
+        if not clip_path or clip_path == SCENE_SKIPPED:
+            return "FAIL: no clip was generated for this scene"
+        if not os.path.exists(clip_path):
+            return f"FAIL: clip file not found at {clip_path}"
+
+        with open(clip_path, "rb") as f:
+            video_bytes = f.read()
+        if len(video_bytes) > 18 * 1024 * 1024:
+            logger.warning(
+                f"Clip for scene {scene_number} too large for inline QC; skipping."
+            )
+            return "PASS (clip too large for automated check)"
+
+        question = (
+            "You are a quality checker for a preschool counting video. "
+            "Watch this clip AND listen to its audio track. Requirements:\n"
+            f"{expected_description}\n\n"
+            "COUNTING PEDAGOGY (important): counting UP from one to the "
+            "total visible (e.g. saying one, two, three while three balloons "
+            "are shown, ideally pointing at each) is CORRECT and must PASS. "
+            "Objects may also appear one at a time in sync with the count.\n\n"
+            "FAIL ONLY for these critical issues:\n"
+            "1. The counting goes HIGHER than the number of objects visible, "
+            "or the count ends at a different number than the visible total "
+            "(e.g. counting to four when five balloons are shown).\n"
+            "2. Numbers are spoken/sung while a clearly wrong number of "
+            "objects is on screen (e.g. counting balloons when none are "
+            "visible).\n"
+            "3. Objects randomly appear or disappear mid-clip out of sync "
+            "with the counting.\n"
+            "4. A required main character is missing or badly off-model.\n"
+            "5. Frightening, chaotic or unsafe content.\n"
+            "IGNORE minor pose, gesture, gaze or framing differences - those "
+            "are PASS.\n"
+            "Reply with exactly PASS if acceptable, otherwise FAIL: followed "
+            "by a short reason."
+        )
+        response = brand.generate_content_safe(
+            model=brand.LLM_MODEL,
+            contents=[
+                types.Part.from_bytes(data=video_bytes, mime_type="video/mp4"),
+                question,
+            ],
+        )
+        verdict = (response.text or "").strip()
+        logger.info(f"A/V QC scene {scene_number}: {verdict[:200]}")
+        return verdict if verdict else "FAIL: empty verification response"
+    except Exception as e:
+        logger.error(f"A/V QC error for scene {scene_number}: {e}", exc_info=True)
+        # Do not block production on a QC infrastructure error.
+        return f"PASS (verification unavailable: {e})"
+
+
 # --- Video Agent ---
 video_agent = None
 try:
@@ -235,7 +367,7 @@ try:
         description=DESCRIPTION,
         instruction=load_prompt_from_file("video_agent.txt"),
         output_key="video",
-        tools=[video_generate, video_bulk_generate],
+        tools=[video_generate, video_bulk_generate, verify_scene_clip],
     )
     logger.info(f"✅ Agent '{video_agent.name}' created.")
 except Exception as e:

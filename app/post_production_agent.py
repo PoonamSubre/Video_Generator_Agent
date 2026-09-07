@@ -18,7 +18,7 @@ DESCRIPTION = (
     "loudness-normalized mastering."
 )
 
-_FADE = 0.5  # gentle crossfade for preschool pacing
+_FADE = 0.8  # longer crossfade smooths world/music changes between scenes
 SCENE_SKIPPED = "SCENE_SKIPPED"
 
 
@@ -145,20 +145,38 @@ def stitch_movie(
         else:
             last_v, last_a = "nv0", "na0"
 
-        # 4. Gentle polish: slight warmth, child-safe loudness target.
+        # 4. Optional continuous music bed looped quietly under the episode
+        #    to glue the per-scene soundtracks together.
+        music_bed = brand.BRAND_MUSIC_PATH.exists()
+        if music_bed:
+            logger.info("Mixing continuous music bed under the episode.")
+            bed_idx = len(clips)
+            filter_parts.append(
+                f"[{bed_idx}:a]aresample=48000,"
+                f"aformat=channel_layouts=stereo,volume=0.18[bed]"
+            )
+            filter_parts.append(
+                f"[{last_a}][bed]amix=inputs=2:duration=first:"
+                f"dropout_transition=3[a_mix]"
+            )
+            last_a = "a_mix"
+
+        # 5. Gentle polish: slight warmth, child-safe loudness target.
         filter_parts.append(f"[{last_v}]eq=saturation=1.05[v_master]")
         filter_parts.append(
             f"[{last_a}]loudnorm=I=-16:TP=-1.5:LRA=11[a_master]"
         )
         filter_complex = ";".join(filter_parts)
 
-        # 5. Master export (local only).
+        # 6. Master export (local only).
         output = str(
             brand.session_dir(session_id) / "tingting_episode_master.mp4"
         )
         cmd = ["ffmpeg", "-y"]
         for c in clips:
             cmd += ["-i", c]
+        if music_bed:
+            cmd += ["-stream_loop", "-1", "-i", str(brand.BRAND_MUSIC_PATH)]
         cmd += [
             "-filter_complex", filter_complex,
             "-map", "[v_master]", "-map", "[a_master]",

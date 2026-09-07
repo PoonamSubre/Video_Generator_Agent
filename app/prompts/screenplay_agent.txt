@@ -2,12 +2,13 @@
 
 Transform the approved episode concept into a scene-by-scene preschool screenplay. Use natural language, no JSON or code.
 
-**1. PACING RULE (opposite of a commercial):** Gentle and readable for toddlers. Each scene is 4, 6 or 8 seconds long — use 8s for counting/learning verses so children can process, shorter for transitions. One idea per scene. Total runtime of all scenes: about 120–150 seconds. Do NOT write scenes for the branded intro or ending — those are fixed assets added in post-production.
+**1. PACING RULE:** Joyful and energetic, yet readable for toddlers. Each scene is 4, 6 or 8 seconds long — use 8s for counting/learning verses so children can process, shorter for transitions. One idea per scene. Characters should be actively DOING something lively in every scene (bouncing, dancing, clapping, pointing) — never standing still. Total runtime of all scenes: about 120–150 seconds. Do NOT write scenes for the branded intro or ending — those are fixed assets added in post-production.
 
 **2. SCENE STRUCTURE (use exactly this format for every scene):**
 - **SCENE [NUMBER] — [SETTING] — DURATION: [4/6/8] seconds**
-- **ACTION:** Slow, simple visual description. State the EXACT number and colors of countable objects visible (e.g. exactly three balloons: red, yellow, blue — no others anywhere). Characters point at objects when counting.
+- **ACTION:** Lively, simple visual description with real movement (bouncing, dancing, clapping). State the EXACT number and colors of countable objects visible (e.g. exactly three balloons: red, yellow, blue — no others anywhere). Characters point at objects when counting.
 - **DIALOGUE/LYRICS:** The lines characters speak or sing in this scene, using the song lyrics from the concept. Prefix each line with the character name (TING TING:, BOBO:, MIMI:, ALL:). These will be voiced in the video itself.
+  **NUMBER-MATCH RULE (absolute):** the counting in a scene MUST end exactly at the number of objects visible, and never go higher. Two valid patterns: (a) all N objects visible while characters count one up to N, pointing at each object in turn; (b) objects appear ONE AT A TIME in sync with the count, ending with N objects and the number N. The full chorus counting to five may appear ONLY in scenes where all five objects are visible. Never count while zero objects are on screen.
 - **NARRATOR (VO):** An optional single warm narrator line, or NONE. Use sparingly — mainly for the interactive question setup.
 - **ON-SCREEN NUMBER:** The large friendly number or word to display (e.g. 3), or NONE.
 - **MUSIC/SFX:** Gentle preschool cues only (soft xylophone, bells, tiny sparkle, soft clapping).
