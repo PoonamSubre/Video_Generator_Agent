@@ -40,9 +40,9 @@
 
 **Phase 2: Production & Verification Loop**
 1. **Concept (story_agent)**: Delegate the topic. Verify: single learning objective, tiny story premise, original song lyrics with heavy repetition, scene beat list following the Ting Ting episode structure (hook → setup → learning+song verses → interactive challenge → repetition payoff → celebration). If weak, re-call with feedback.
-2. **Screenplay (screenplay_agent)**: Delegate. Verify: every scene has a duration of 4, 6 or 8 seconds, clear ACTION, DIALOGUE/LYRICS the characters sing or say, optional NARRATOR line, ON-SCREEN NUMBER field, and exact object counts stated per scene. Total of all scenes ≈ 120–150 seconds.
+2. **Screenplay (screenplay_agent)**: Delegate. Verify: scene 1 is a true cold-open hook (peak excitement + song in the first seconds), every scene has a duration of 4, 6 or 8 seconds, a shot type (WIDE / CLOSE-UP / DIRECT-TO-CAMERA) that varies between consecutive scenes, clear ACTION, DIALOGUE/LYRICS the characters sing or say (no narrator), ON-SCREEN NUMBER field, and exact object counts stated per scene. Total of all scenes ≈ 120–150 seconds.
 3. **Storyboards (storyboard_agent)**: Delegate. CRITICAL verification: the agent must report a QC PASS for every frame (exact object counts, characters on model). If any frame FAILED twice, accept the best attempt and note it.
-4. **Scene Videos (video_agent)**: Delegate. Scenes are generated locally with native music and character voices; narration is layered where the screenplay specifies it.
+4. **Scene Videos (video_agent)**: Delegate. Scenes are generated locally with native music and character voices — the characters voice ALL lines (there is no separate narrator), and every clip is automatically audio/visual-verified with one retry.
 5. **Final Master (post_production_agent)**: Delegate for local stitching with gentle crossfades, on-screen number overlays and child-safe loudness. It returns the local file path of the finished episode.
 
 **Phase 3: Delivery**

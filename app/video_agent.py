@@ -10,7 +10,6 @@ from google.adk.agents import Agent
 from google.adk.tools import ToolContext
 
 from .utils.utils import load_prompt_from_file
-from .utils.audio_utils import generate_speech
 from . import tingting_brand as brand
 
 # Set logging
@@ -18,8 +17,8 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
 
 DESCRIPTION = (
-    "Agent responsible for creating gentle preschool video scenes with "
-    "native music/voices and optional narrator lines, saved locally."
+    "Agent responsible for creating energetic preschool video scenes - "
+    "characters voice all dialogue and songs natively - saved locally."
 )
 DEFAULT_ASPECT_RATIO = "16:9"
 SCENE_SKIPPED = "SCENE_SKIPPED"
@@ -58,7 +57,6 @@ def _generate_scene_clip(
     prompt: str,
     scene_number: int,
     image_path: str,
-    narration_text: str,
     duration_seconds: int,
     tool_context: ToolContext,
 ) -> str:
@@ -75,14 +73,10 @@ def _generate_scene_clip(
         raw_path = str(out_dir / "raw_clip.mp4")
         final_path = str(out_dir / "final_clip.mp4")
 
-        # 1. Optional narrator voiceover (local WAV).
-        narration_path = None
-        if narration_text and narration_text.strip().upper() not in ("", "NONE"):
-            narration_path = generate_speech(
-                narration_text.strip(), session_id, scene_number
-            )
-
-        # 2. Video generation - Ting Ting style enforced in code.
+        # Video generation - Ting Ting style enforced in code.
+        # ONE VOICE AUTHORITY: the characters (via Veo) speak and sing
+        # everything. No separate narrator track is mixed - that caused
+        # doubled/robotic voices.
         full_prompt = f"{prompt}\n{brand.VIDEO_CONTINUITY}\n{brand.MASTER_STYLE}"
 
         image = None
@@ -136,21 +130,7 @@ def _generate_scene_clip(
 
         _save_generated_video(result.generated_videos[0], raw_path)
 
-        # 3. Mix narrator over Veo's native music/voices (gentle ducking).
-        if narration_path and os.path.exists(narration_path):
-            cmd = [
-                "ffmpeg", "-y", "-i", raw_path, "-i", narration_path,
-                "-filter_complex",
-                "[0:a]volume=0.55[bg];"
-                "[1:a]aresample=48000,volume=1.1[vo];"
-                "[bg][vo]amix=inputs=2:duration=first:dropout_transition=2[a]",
-                "-map", "0:v", "-map", "[a]",
-                "-c:v", "copy", "-c:a", "aac", "-b:a", "192k",
-                final_path,
-            ]
-            subprocess.run(cmd, capture_output=True, check=True)
-        else:
-            shutil.copyfile(raw_path, final_path)
+        shutil.copyfile(raw_path, final_path)
 
         logger.info(f"Scene {scene_number} finished: {final_path}")
         return final_path
@@ -167,7 +147,6 @@ def video_generate(
     prompt: str,
     scene_number: int,
     image_path: str,
-    narration_text: str,
     duration_seconds: int,
     qc_description: str,
     tool_context: ToolContext,
@@ -184,8 +163,6 @@ def video_generate(
         scene_number (int): Scene number.
         image_path (str): Local path of the storyboard keyframe to use as the
             starting frame (pass empty string or SCENE_SKIPPED if none).
-        narration_text (str): Optional narrator voiceover line to lay over the
-            scene, or NONE if the scene has no narrator.
         duration_seconds (int): Clip length, one of 4, 6 or 8.
         qc_description (str): The scene's audio/visual contract, e.g.
             "exactly 3 balloons red yellow blue visible the whole clip;
@@ -197,8 +174,7 @@ def video_generate(
         str: Local path of the finished scene clip, or SCENE_SKIPPED.
     """
     path = _generate_scene_clip(
-        prompt, scene_number, image_path, narration_text,
-        duration_seconds, tool_context,
+        prompt, scene_number, image_path, duration_seconds, tool_context,
     )
     if (
         path == SCENE_SKIPPED
@@ -220,8 +196,8 @@ def video_generate(
         f"You MUST strictly satisfy: {qc_description}"
     )
     retry_path = _generate_scene_clip(
-        corrective_prompt, scene_number, image_path, narration_text,
-        duration_seconds, tool_context,
+        corrective_prompt, scene_number, image_path, duration_seconds,
+        tool_context,
     )
     if retry_path == SCENE_SKIPPED:
         return path
@@ -237,7 +213,6 @@ def video_bulk_generate(
     prompts: list[str],
     scene_numbers: list[int],
     image_paths: list[str],
-    narration_texts: list[str],
     durations_seconds: list[int],
     qc_descriptions: list[str],
     tool_context: ToolContext,
@@ -250,7 +225,6 @@ def video_bulk_generate(
         prompts (list[str]): One visual/audio prompt per scene.
         scene_numbers (list[int]): Scene numbers.
         image_paths (list[str]): Local storyboard keyframe path per scene.
-        narration_texts (list[str]): Narrator line per scene (NONE if none).
         durations_seconds (list[int]): Clip length per scene (4, 6 or 8).
         qc_descriptions (list[str]): Audio/visual contract per scene (exact
             object count, allowed counting range). NONE to skip a scene.
@@ -270,7 +244,6 @@ def video_bulk_generate(
                 prompts[i],
                 scene_numbers[i],
                 image_paths[i] if i < len(image_paths) else "",
-                narration_texts[i] if i < len(narration_texts) else "NONE",
                 durations_seconds[i] if i < len(durations_seconds) else 6,
                 qc_descriptions[i] if i < len(qc_descriptions) else "NONE",
                 tool_context,

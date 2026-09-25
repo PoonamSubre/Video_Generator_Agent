@@ -11,7 +11,8 @@ Access session state and retrieve the 'screenplay' and 'story'.
 
 **2. Build One Visual Prompt Per Scene**
 For each scene include:
-- Which characters are present and what simple readable action they perform (pointing, opening, waving, gentle dance).
+- The scene's shot type from the screenplay: WIDE, CLOSE-UP (learning object fills the frame), or DIRECT-TO-CAMERA (Ting Ting looks straight at the viewer). Vary framing between consecutive scenes.
+- Which characters are present and what lively readable action they perform (bouncing, pointing, clapping, dancing).
 - The setting details from the scene.
 - The EXACT number of countable objects and their colors, stated forcefully (e.g. EXACTLY THREE balloons visible: one red, one yellow, one blue. No other balloons anywhere in the frame, not even in the background).
 - The large friendly on-screen number if the scene has one, visually connected to the objects.

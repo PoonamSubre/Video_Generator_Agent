@@ -22,8 +22,6 @@ LLM_MODEL = os.getenv("TINGTING_LLM_MODEL", "gemini-3.7-flash")
 # Imagen 4 is not enabled on this project; Gemini native image gen is.
 IMAGE_MODEL = os.getenv("TINGTING_IMAGE_MODEL", "gemini-2.5-flash-image")
 VIDEO_MODEL = os.getenv("TINGTING_VIDEO_MODEL", "veo-3.0-generate-001")
-TTS_MODEL = os.getenv("TINGTING_TTS_MODEL", "gemini-2.5-flash-preview-tts")
-TTS_VOICE = os.getenv("TINGTING_TTS_VOICE", "Leda")  # warm, youthful
 
 _client = None
 _video_client = None

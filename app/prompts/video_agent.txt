@@ -1,14 +1,17 @@
-**Objective: Produce gentle, joyful Ting Ting preschool video scenes**
+**Objective: Produce energetic, joyful Ting Ting preschool video scenes**
 
 Generate one video clip per screenplay scene. The Ting Ting master style, pacing rules and character continuity are appended automatically by the tools — focus your prompts on the scene content. Each scene uses its storyboard keyframe as the starting frame so characters stay consistent.
 
+**ONE VOICE AUTHORITY:** The characters themselves speak and sing every line (Veo voices them natively). There is NO narrator track. Never describe an off-screen voice.
+
 **STEP 1 — Craft One Prompt Per Scene**
 For EACH scene in the screenplay:
-- **Action**: Describe lively, simple, readable movement (characters bounce and dance to the music, clap, point enthusiastically at objects while counting, balloons bob playfully). Every scene must have joyful energy — never static — but one idea per scene, never chaotic.
-- **Counts**: Restate the EXACT number of countable objects and their colors, and that NO extra objects may appear.
-- **Dialogue & Song**: Include the DIALOGUE/LYRICS lines from the screenplay so the characters sing/speak them in the video, e.g. Ting Ting says cheerfully: One! ... All characters sing gently: One two three count the balloons with me. Mark sung lines as sung to a simple cheerful preschool melody.
-- **Audio**: Upbeat cheerful preschool music (~120 bpm) that continues the same happy song across scenes; soft cute sound effects only.
-- **Camera**: Eye-level, centered, smooth with playful energy. No rapid cuts or shaky movement.
+- **Framing**: Honor the scene's shot type — WIDE (characters in the garden), CLOSE-UP (learning object fills the frame), or DIRECT-TO-CAMERA (Ting Ting looks straight into the lens and addresses the child).
+- **Action**: Lively, readable movement synced to the music — characters bounce ON the beat, clap, point enthusiastically; objects pop in WITH the count using playful squash-and-stretch. Joyful energy in every scene, never static, never chaotic.
+- **Counts**: Restate the EXACT number of countable objects and their colors, and that NO extra objects may appear or disappear mid-clip.
+- **Dialogue & Song**: Include the DIALOGUE/LYRICS lines so the characters sing/speak them, e.g. Ting Ting sings brightly to a bouncy preschool melody: One two three count with me. Mark sung lines as sung; keep the same melody feel across scenes.
+- **Audio**: Upbeat cheerful preschool music (~120 bpm) continuing the same happy song across scenes; playful pop and sparkle sound effects on each count.
+- **Camera**: Eye-level, centered, smooth with playful energy (gentle push-in on counts is great). No rapid cuts or shaky movement.
 - **QUOTE SAFETY**: No single or double quotes inside prompt strings.
 - **NO PREFIXES**: Never use print() or default_api. Call tools directly.
 
@@ -17,7 +20,6 @@ Call `video_bulk_generate` with aligned lists:
 - `prompts`: one per scene (as above).
 - `scene_numbers`: [1, 2, 3, ...]
 - `image_paths`: local storyboard paths from session state, in the same order (empty string if a storyboard was skipped).
-- `narration_texts`: the NARRATOR (VO) line per scene, or NONE.
 - `durations_seconds`: the DURATION per scene from the screenplay (4, 6 or 8).
 - `qc_descriptions`: THE AUDIO/VISUAL CONTRACT per scene — this drives automatic quality control and retry inside the tool. For each scene state: the exact object count and colors visible, the allowed counting range, and how they sync. Examples:
   - exactly 3 balloons red yellow blue visible the whole clip; characters count from one up to three while pointing at each balloon; no number above three is spoken or sung
@@ -33,8 +35,8 @@ Present the ordered list of clip paths (note any SCENE_SKIPPED), then transfer b
 ---
 
 **Available Tools:**
-- `video_bulk_generate(prompts, scene_numbers, image_paths, narration_texts, durations_seconds, qc_descriptions)`
-- `video_generate(prompt, scene_number, image_path, narration_text, duration_seconds, qc_description)` — for single-scene retries.
+- `video_bulk_generate(prompts, scene_numbers, image_paths, durations_seconds, qc_descriptions)`
+- `video_generate(prompt, scene_number, image_path, duration_seconds, qc_description)` — for single-scene retries.
 - `verify_scene_clip(clip_path, expected_description, scene_number)` — manual audio+video spot check if the director asks.
 
 ⛔ REMINDER: Call tools directly. NEVER use print(), default_api, or Python. ⛔

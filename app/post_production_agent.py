@@ -18,7 +18,7 @@ DESCRIPTION = (
     "loudness-normalized mastering."
 )
 
-_FADE = 0.8  # longer crossfade smooths world/music changes between scenes
+_FADE = 0.4  # crisp transitions keep energy up while masking music seams
 SCENE_SKIPPED = "SCENE_SKIPPED"
 
 

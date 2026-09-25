@@ -31,8 +31,8 @@ The heartbeat of the episode. Rules:
 
 **5. SCENE BEAT LIST (this drives the whole production)**
 List 10–16 beats following the Ting Ting structure, each with a target duration of 4, 6 or 8 seconds, summing to roughly 120–150 seconds:
-- Beat 1: Hook — something visually interesting happens immediately.
-- Beats 2–3: Setup — characters discover the learning opportunity.
+- Beat 1: COLD-OPEN HOOK — the most exciting moment of the episode is ALREADY happening in second one (balloons burst out, characters cheer, the song starts instantly). Never open with walking, searching or wondering.
+- Beat 2: one quick setup beat if truly needed.
 - Middle beats: Main learning + song, ONE step per beat (e.g. one beat per number). State the EXACT number of countable objects visible in each beat and their colors.
 - Interactive beat: a character faces the camera and asks the child to count/find/answer, followed by a pause, then the answer revealed slowly.
 - Payoff beat: repeat the learning once more and resolve the story happily.

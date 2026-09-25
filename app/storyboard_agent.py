@@ -62,9 +62,11 @@ def storyboard_generate(
                 "The attached image is the reference frame of this preschool "
                 "video. Generate the NEXT storyboard frame of the SAME video: "
                 "keep exactly the same art style, character designs, faces, "
-                "clothing, environment, tree style, lighting and color "
-                "palette as the reference. Only change what the new scene "
-                "requires:\n"
+                "clothing, tree style, lighting and color palette as the "
+                "reference - but DO vary the camera framing (wide shot, "
+                "close-up, or character facing the camera) and show a "
+                "different angle or corner of the same garden world as the "
+                "scene requires, so consecutive frames do not look identical:\n"
             )
         else:
             instruction = (

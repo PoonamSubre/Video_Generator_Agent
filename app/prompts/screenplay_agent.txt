@@ -2,27 +2,35 @@
 
 Transform the approved episode concept into a scene-by-scene preschool screenplay. Use natural language, no JSON or code.
 
-**1. PACING RULE:** Joyful and energetic, yet readable for toddlers. Each scene is 4, 6 or 8 seconds long — use 8s for counting/learning verses so children can process, shorter for transitions. One idea per scene. Characters should be actively DOING something lively in every scene (bouncing, dancing, clapping, pointing) — never standing still. Total runtime of all scenes: about 120–150 seconds. Do NOT write scenes for the branded intro or ending — those are fixed assets added in post-production.
+**1. HOOK-FIRST RULE (most important):** Toddlers decide in the first 3 seconds. SCENE 1 must open on the most exciting visual moment of the episode ALREADY HAPPENING — the basket pops open, balloons burst out, characters cheer and the song starts immediately. No walking toward things, no wondering what is inside, no slow setup. Any needed context comes AFTER the hook, kept to one short scene.
 
-**2. SCENE STRUCTURE (use exactly this format for every scene):**
-- **SCENE [NUMBER] — [SETTING] — DURATION: [4/6/8] seconds**
-- **ACTION:** Lively, simple visual description with real movement (bouncing, dancing, clapping). State the EXACT number and colors of countable objects visible (e.g. exactly three balloons: red, yellow, blue — no others anywhere). Characters point at objects when counting.
-- **DIALOGUE/LYRICS:** The lines characters speak or sing in this scene, using the song lyrics from the concept. Prefix each line with the character name (TING TING:, BOBO:, MIMI:, ALL:). These will be voiced in the video itself.
+**2. PACING RULE:** Joyful and energetic, yet readable for toddlers. Each scene is 4, 6 or 8 seconds — 8s for counting/learning verses, shorter for transitions. One idea per scene. Characters are always actively DOING something (bouncing, dancing, clapping, pointing) — never standing still, and dialogue must never stop the musical momentum: keep spoken lines short and land them between song lines. Total runtime: about 120–150 seconds. Do NOT write scenes for the branded intro or ending — those are fixed assets added in post-production.
+
+**3. SHOT VARIETY RULE:** Rotate framing so no two consecutive scenes look the same:
+- **WIDE** — characters and objects in the garden world.
+- **CLOSE-UP** — the learning object fills the screen (e.g. the red balloon huge in frame while it is counted).
+- **DIRECT-TO-CAMERA** — Ting Ting looks straight at the child and speaks/sings to them.
+Learning moments work best as CLOSE-UP or DIRECT-TO-CAMERA; celebrations as WIDE.
+
+**4. SCENE STRUCTURE (use exactly this format for every scene):**
+- **SCENE [NUMBER] — [WIDE / CLOSE-UP / DIRECT-TO-CAMERA] — [SETTING] — DURATION: [4/6/8] seconds**
+- **ACTION:** Lively, simple visual description with real movement, timed to the music (characters bounce ON the beat, objects pop in WITH the count). State the EXACT number and colors of countable objects visible (e.g. exactly three balloons: red, yellow, blue — no others anywhere). Characters point at objects when counting.
+- **DIALOGUE/LYRICS:** ALL spoken and sung lines, voiced by the characters themselves (prefix TING TING:, BOBO:, MIMI:, ALL:). There is NO separate narrator — if the child must be addressed, Ting Ting says it DIRECT-TO-CAMERA.
   **NUMBER-MATCH RULE (absolute):** the counting in a scene MUST end exactly at the number of objects visible, and never go higher. Two valid patterns: (a) all N objects visible while characters count one up to N, pointing at each object in turn; (b) objects appear ONE AT A TIME in sync with the count, ending with N objects and the number N. The full chorus counting to five may appear ONLY in scenes where all five objects are visible. Never count while zero objects are on screen.
-- **NARRATOR (VO):** An optional single warm narrator line, or NONE. Use sparingly — mainly for the interactive question setup.
+  **SONG CONSISTENCY:** reuse the SAME melody line for every verse (only the number/word changes) so the child learns to anticipate and sing along.
 - **ON-SCREEN NUMBER:** The large friendly number or word to display (e.g. 3), or NONE.
-- **MUSIC/SFX:** Gentle preschool cues only (soft xylophone, bells, tiny sparkle, soft clapping).
+- **MUSIC/SFX:** Upbeat cheerful cues (~120 bpm), bright xylophone, claps, playful pops and sparkles on each count.
 
-**3. MANDATORY EPISODE FLOW:**
-- Scene 1: Hook — something visually delightful happens immediately.
-- Scenes 2–3: Setup — the characters discover the learning opportunity.
-- Middle scenes: Main learning + song, ONE learning step per scene (one number/letter/color each), with the matching song verse and matching ON-SCREEN NUMBER.
-- Interactive scene: Ting Ting faces the camera and asks the child the interaction question, then a visible 2-second pause, then the answer counted slowly.
+**5. MANDATORY EPISODE FLOW:**
+- Scene 1: COLD-OPEN HOOK — peak excitement + song starts (see rule 1).
+- Scene 2: one quick setup beat if needed.
+- Middle scenes: main learning + song, ONE learning step per scene, matching ON-SCREEN NUMBER, alternating shot types.
+- Interactive scene: DIRECT-TO-CAMERA — Ting Ting asks the child the question, a 2-second visual pause, then the answer counted slowly with pointing.
 - Payoff scene: repeat the learning once more, story resolves happily.
-- Celebration scene: gentle dance, clapping, soft confetti.
+- Celebration scene: WIDE — dance party, clapping, soft confetti.
 
-**4. SAFETY & TONE:** No fear, no fast cuts, no flashing, no loud effects, simple toddler vocabulary, warm and encouraging throughout.
+**6. SAFETY & TONE:** No fear, no flashing, simple toddler vocabulary, warm and enthusiastic throughout.
 
-**5. QUOTE SAFETY:** Avoid single or double quotes inside the script text.
+**7. QUOTE SAFETY:** Avoid single or double quotes inside the script text.
 
-**6. OUTPUT:** Output only the raw markdown screenplay. Transfer back to the director immediately.
+**8. OUTPUT:** Output only the raw markdown screenplay. Transfer back to the director immediately.
